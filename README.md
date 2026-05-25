@@ -1,58 +1,218 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Control de Inventario
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicación web desarrollada con Laravel para la gestión de inventario de material en una empresa.  
+El sistema permite consultar artículos, clasificarlos por categorías, controlar su stock y diferenciar permisos entre usuarios empleados y administradores.
 
-## About Laravel
+Este proyecto forma parte del desarrollo del proyecto final del ciclo de Desarrollo de Aplicaciones Web.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Estado del proyecto
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+El proyecto se encuentra actualmente en fase de desarrollo.
 
-## Learning Laravel
+Funcionalidades implementadas hasta el momento:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Instalación y configuración inicial de Laravel.
+- Configuración de base de datos MariaDB.
+- Autenticación de usuarios mediante Laravel Breeze.
+- Personalización visual de las vistas de autenticación.
+- Sistema básico de roles: administrador y empleado.
+- Migraciones principales del modelo de inventario.
+- Modelos Eloquent y relaciones entre entidades.
+- Seeders con datos iniciales de prueba.
+- Listado de artículos.
+- Vista de detalle de artículo.
+- Creación de artículos desde el panel de administración.
+- Edición de artículos desde el panel de administración.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Tecnologías utilizadas
 
-## Agentic Development
+- PHP 8.3
+- Laravel 13
+- MariaDB
+- Blade
+- Tailwind CSS
+- Vite
+- Composer
+- npm
+- Git y GitHub
+- WSL2 con Ubuntu
+- Visual Studio Code
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+## Funcionalidades principales previstas
+
+El sistema contempla las siguientes funcionalidades:
+
+- Autenticación de usuarios.
+- Diferenciación de roles:
+  - Empleado: consulta del inventario.
+  - Administrador: gestión de artículos y stock.
+- CRUD de artículos.
+- Clasificación de artículos por categorías:
+  - Informática
+  - Limpieza
+  - Oficina
+- Cálculo automático del estado del artículo:
+  - Disponible
+  - Bajo stock
+  - Agotado
+- Registro de movimientos de stock.
+- Historial de entradas y salidas.
+- Panel de control con indicadores básicos.
+- API REST de consulta.
+
+---
+
+## Modelo de datos principal
+
+El modelo de datos se organiza en las siguientes entidades:
+
+- `users`: usuarios del sistema y rol asignado.
+- `categories`: categorías de artículos.
+- `items`: artículos del inventario.
+- `stock_movements`: movimientos de entrada y salida de stock.
+
+El estado de cada artículo no se almacena directamente en la base de datos, sino que se calcula dinámicamente a partir del stock actual y el stock mínimo.
+
+---
+
+## Instalación del proyecto en local
+
+Clonar el repositorio:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/EnriqueNieto90/ENLAplicacionGestorInventario.git
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Entrar en la carpeta del proyecto:
 
-## Contributing
+```bash
+cd ENLAplicacionGestorInventario
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Instalar dependencias PHP:
 
-## Code of Conduct
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Instalar dependencias frontend:
 
-## Security Vulnerabilities
+```bash
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Copiar el archivo de entorno:
 
-## License
+```bash
+cp .env.example .env
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Generar la clave de aplicación:
+
+```bash
+php artisan key:generate
+```
+
+Configurar la conexión a la base de datos en el archivo `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=inventario
+DB_USERNAME=usuario
+DB_PASSWORD=contraseña
+```
+
+Ejecutar migraciones y seeders:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Compilar los assets:
+
+```bash
+npm run build
+```
+
+Arrancar el servidor de desarrollo:
+
+```bash
+php artisan serve
+```
+
+La aplicación estará disponible en:
+
+```text
+http://localhost:8000
+```
+
+---
+
+## Usuarios de prueba
+
+El sistema incluye usuarios iniciales generados mediante seeders.
+
+### Administrador
+
+```text
+Email: admin@inventario.test
+Contraseña: password
+```
+
+### Empleado
+
+```text
+Email: empleado@inventario.test
+Contraseña: password
+```
+
+El usuario administrador puede gestionar artículos y stock.  
+El usuario empleado puede consultar el inventario, pero no realizar acciones de gestión.
+
+---
+
+## Flujo básico de uso
+
+1. El usuario inicia sesión.
+2. Accede al panel de control.
+3. Consulta el listado de artículos.
+4. Puede ver el detalle de cada artículo.
+5. Si es administrador, puede crear y editar artículos.
+6. El control de stock se realizará mediante movimientos de entrada y salida.
+
+---
+
+## Decisiones técnicas destacadas
+
+- Uso de Laravel Breeze como base para la autenticación.
+- Personalización de las vistas generadas por Breeze.
+- Uso de Eloquent ORM para la gestión de modelos y relaciones.
+- Uso de migraciones para versionar la estructura de la base de datos.
+- Uso de seeders para generar datos iniciales de prueba.
+- Separación entre autenticación y autorización mediante roles.
+- Estado de los artículos calculado dinámicamente para evitar inconsistencias.
+- Baja lógica de artículos mediante el campo `is_active`.
+- Registro previsto de movimientos de stock para mantener trazabilidad.
+
+---
+
+## Ramas del repositorio
+
+- `master`: rama principal estable.
+- `ENLdeveloper`: rama de desarrollo utilizada durante la implementación.
+
+---
+
+## Autor
+
+**Enrique Nieto Lorenzo**  
+Proyecto final de Desarrollo de Aplicaciones Web  
+IES Los Sauces - Benavente
