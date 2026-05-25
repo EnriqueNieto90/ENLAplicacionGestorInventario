@@ -13,8 +13,16 @@ class ItemController extends Controller
         $items = Item::with('category')
             ->where('is_active', true)
             ->orderBy('name')
-            ->paginate(10);
+            ->paginate(5);
 
         return view('items.index', compact('items'));
+    }
+
+    public function show(Item $item): View
+    {
+        // Carga la categoría asociada al artículo antes de mostrar el detalle
+        $item->load('category');
+
+        return view('items.show', compact('item'));
     }
 }

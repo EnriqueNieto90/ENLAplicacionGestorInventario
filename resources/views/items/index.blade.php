@@ -5,9 +5,6 @@
                 <h2 class="text-lg font-medium text-slate-900">
                     Artículos
                 </h2>
-                <p class="text-sm text-slate-500">
-                    Listado de artículos activos registrados en el inventario.
-                </p>
             </div>
         </div>
     </x-slot>
@@ -55,9 +52,10 @@
                                     </td>
 
                                     <td class="px-6 py-4 text-sm text-slate-700">
-                                        <div class="font-medium text-slate-900">
+                                        <a href="{{ route('items.show', $item) }}"
+                                        class="font-medium text-marca-700 hover:text-marca-900 hover:underline">
                                             {{ $item->name }}
-                                        </div>
+                                        </a>
                                         @if ($item->description)
                                             <div class="mt-1 text-xs text-slate-500">
                                                 {{ $item->description }}

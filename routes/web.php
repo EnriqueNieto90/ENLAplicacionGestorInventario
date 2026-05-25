@@ -14,6 +14,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/items', [ItemController::class, 'index'])->name('items.index');
+    Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
