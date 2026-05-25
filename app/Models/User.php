@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -30,13 +31,21 @@ class User extends Authenticatable
         ];
     }
 
+    // Comprueba si el usuario tiene rol administrador
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
+    // Comprueba si el usuario tiene rol empleado
     public function isEmployee(): bool
     {
         return $this->role === 'employee';
+    }
+
+    // Un usuario puede registrar muchos movimientos de stock
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
     }
 }
