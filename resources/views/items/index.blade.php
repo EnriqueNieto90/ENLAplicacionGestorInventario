@@ -6,6 +6,12 @@
                     Artículos
                 </h2>
             </div>
+            @if (auth()->user()->isAdmin())
+                <a href="{{ route('items.create') }}"
+                class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
+                    Nuevo artículo
+                </a>
+            @endif
         </div>
     </x-slot>
 
