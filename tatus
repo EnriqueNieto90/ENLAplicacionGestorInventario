@@ -1,0 +1,20 @@
+[90m= [39m[34;4mApp\Models\Item[39;24m {#8747
+    [34mid[39m: [35m1[39m,
+    [34msku[39m: [32m"[39m[32mINF-001[39m[32m"[39m,
+    [34mname[39m: [32m"[39m[32mRatón inalámbrico[39m[32m"[39m,
+    [34mdescription[39m: [32m"[39m[32mRatón óptico para equipos de oficina[39m[32m"[39m,
+    [34mcategory_id[39m: [35m1[39m,
+    [34mstock[39m: [35m2[39m,
+    [34mmin_stock[39m: [35m3[39m,
+    [34mis_active[39m: [35m1[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-05-25 07:55:53[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-05-25 07:56:39[39m[32m"[39m,
+    [34mcategory[39m: [34;4mApp\Models\Category[39;24m {#7434
+      [34mid[39m: [35m1[39m,
+      [34mname[39m: [32m"[39m[32mInformática[39m[32m"[39m,
+      [34mdescription[39m: [32m"[39m[32mMaterial informático y periféricos[39m[32m"[39m,
+      [34mcreated_at[39m: [32m"[39m[32m2026-05-25 07:55:51[39m[32m"[39m,
+      [34mupdated_at[39m: [32m"[39m[32m2026-05-25 07:55:51[39m[32m"[39m,
+    },
+    +[1mstatus[22m: [32m"[39m[32mbajo stock[39m[32m"[39m,
+  }
