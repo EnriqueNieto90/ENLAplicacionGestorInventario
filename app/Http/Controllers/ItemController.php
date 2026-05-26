@@ -7,6 +7,7 @@ use App\Models\Item;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
@@ -56,6 +57,37 @@ class ItemController extends Controller
         return redirect()
             ->route('items.show', $item)
             ->with('success', 'Artículo creado correctamente.');
+    }
+
+    public function edit(Item $item): View
+    {
+        // Carga las categorías para poder cambiar la clasificación del artículo
+        $categories = Category::orderBy('name')->get();
+
+        return view('items.edit', compact('item', 'categories'));
+    }
+
+    public function update(Request $request, Item $item): RedirectResponse
+    {
+        // Valida los datos permitiendo mantener el mismo SKU del artículo actual
+        $validated = $request->validate([
+            'sku' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('items', 'sku')->ignore($item->id),
+            ],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'min_stock' => ['required', 'integer', 'min:0'],
+        ]);
+
+        $item->update($validated);
+
+        return redirect()
+            ->route('items.show', $item)
+            ->with('success', 'Artículo actualizado correctamente.');
     }
 
     public function destroy(Item $item): RedirectResponse
