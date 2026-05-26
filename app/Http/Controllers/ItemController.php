@@ -57,4 +57,16 @@ class ItemController extends Controller
             ->route('items.show', $item)
             ->with('success', 'Artículo creado correctamente.');
     }
+
+    public function destroy(Item $item): RedirectResponse
+    {
+        // Baja lógica: el artículo se desactiva, pero no se elimina físicamente
+        $item->update([
+            'is_active' => false,
+        ]);
+
+        return redirect()
+            ->route('items.index')
+            ->with('success', 'Artículo dado de baja correctamente.');
+    }
 }

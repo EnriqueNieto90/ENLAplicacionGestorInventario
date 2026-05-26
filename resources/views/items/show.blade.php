@@ -7,10 +7,26 @@
                 </h2>
             </div>
 
-            <a href="{{ route('items.index') }}"
-               class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-                Volver al listado
-            </a>
+            <div class="flex flex-wrap gap-3">
+                @if (auth()->user()->isAdmin())
+
+                    <form method="POST" action="{{ route('items.destroy', $item) }}"
+                        onsubmit="return confirm('¿Seguro que quieres dar de baja este artículo?');">
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50">
+                            Dar de baja
+                        </button>
+                    </form>
+                @endif
+
+                <a href="{{ route('items.index') }}"
+                class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                    Volver al listado
+                </a>
+            </div>
         </div>
     </x-slot>
 

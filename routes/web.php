@@ -18,6 +18,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['admin'])->group(function () {
         Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
         Route::post('/items', [ItemController::class, 'store'])->name('items.store');
+        Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
     });
 
     Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
