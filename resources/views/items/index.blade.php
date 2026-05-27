@@ -25,6 +25,89 @@
                     </h3>
                 </div>
 
+                <form method="GET" action="{{ route('items.index') }}" class="border-b border-slate-200 px-6 py-4">
+                    <div class="grid gap-4 lg:grid-cols-4">
+                        <div class="lg:col-span-2">
+                            <x-input-label for="search" value="Buscar artículo" />
+                            <x-text-input
+                                id="search"
+                                name="search"
+                                type="text"
+                                class="mt-1 block w-full"
+                                value="{{ request('search') }}"
+                                placeholder="Buscar por nombre, SKU o descripción"
+                            />
+                        </div>
+
+                        <div>
+                            <x-input-label for="category_id" value="Categoría" />
+                            <select
+                                id="category_id"
+                                name="category_id"
+                                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                            >
+                                <option value="">Todas las categorías</option>
+
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <x-input-label for="status" value="Estado" />
+                            <select
+                                id="status"
+                                name="status"
+                                class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                            >
+                                <option value="">Todos los estados</option>
+                                <option value="disponible" @selected(request('status') === 'disponible')>
+                                    Disponible
+                                </option>
+                                <option value="bajo_stock" @selected(request('status') === 'bajo_stock')>
+                                    Bajo stock
+                                </option>
+                                <option value="agotado" @selected(request('status') === 'agotado')>
+                                    Agotado
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap items-center gap-3">
+                        <button type="submit"
+                                class="rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
+                            Aplicar filtros
+                        </button>
+
+                        <a href="{{ route('items.index') }}"
+                        class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                            Limpiar filtros
+                        </a>
+                    </div>
+                </form>
+
+                @if (request()->hasAny(['search', 'category_id', 'status']))
+                    <div class="border-b border-slate-200 bg-slate-50 px-6 py-3 text-sm text-slate-600">
+                        Filtros aplicados.
+
+                        @if (request('search'))
+                            <span class="ml-2 inline-flex rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200">
+                                Búsqueda: {{ request('search') }}
+                            </span>
+                        @endif
+
+                        @if (request('status'))
+                            <span class="ml-2 inline-flex rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200">
+                                Estado: {{ str_replace('_', ' ', request('status')) }}
+                            </span>
+                        @endif
+                    </div>
+                @endif
+
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200">
                         <thead class="bg-slate-50">

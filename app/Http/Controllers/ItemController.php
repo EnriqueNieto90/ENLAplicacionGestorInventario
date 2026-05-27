@@ -11,15 +11,47 @@ use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Carga los artículos activos junto con su categoría y los pagina.
-        $items = Item::with('category')
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->paginate(5);
+        // Consulta base de artículos activos junto con su categoría
+        $query = Item::with('category')
+            ->where('is_active', true);
 
-        return view('items.index', compact('items'));
+        // Búsqueda por texto en SKU, nombre o descripción
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('sku', 'like', '%' . $search . '%')
+                    ->orWhere('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filtro por categoría
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->input('category_id'));
+        }
+
+        // Filtro por estado calculado (disponible, bajo stock, agotado)
+        if ($request->filled('status')) {
+            match ($request->input('status')) {
+                'disponible' => $query->whereColumn('stock', '>', 'min_stock'),
+                'bajo_stock' => $query->where('stock', '>', 0)
+                    ->whereColumn('stock', '<=', 'min_stock'),
+                'agotado' => $query->where('stock', 0),
+                default => null,
+            };
+        }
+
+        $items = $query->orderBy('name')
+            ->paginate(5)
+            ->withQueryString();
+
+        // Categorías necesarias para el select del filtro
+        $categories = Category::orderBy('name')->get();
+
+        return view('items.index', compact('items', 'categories'));
     }
 
     public function show(Item $item): View
