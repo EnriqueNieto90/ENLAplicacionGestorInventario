@@ -123,21 +123,115 @@
                 </div>
             </div>
 
-            {{-- Bloque reservado para futuras acciones e historial --}}
+            {{-- Bloque para acciones e historial --}}
             <div class="grid gap-6 lg:grid-cols-2">
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-6">
+                <div class="rounded-2xl border border-slate-200 bg-white p-6">
                     <h3 class="text-sm font-medium text-slate-900">
                         Gestión de stock
                     </h3>
+
+                    @if (auth()->user()->isAdmin())
+                        <form method="POST" action="{{ route('items.stock-movements.store', $item) }}" class="mt-5 space-y-5">
+                            @csrf
+
+                            <div>
+                                <x-input-label for="type" value="Tipo de movimiento" />
+                                <select
+                                    id="type"
+                                    name="type"
+                                    class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                                    required
+                                >
+                                    <option value="in" @selected(old('type') === 'in')>Entrada de stock</option>
+                                    <option value="out" @selected(old('type') === 'out')>Salida de stock</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="quantity" value="Cantidad" />
+                                <x-text-input
+                                    id="quantity"
+                                    name="quantity"
+                                    type="number"
+                                    min="1"
+                                    class="mt-1 block w-full"
+                                    value="{{ old('quantity') }}"
+                                    required
+                                />
+                                <x-input-error :messages="$errors->get('quantity')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="notes" value="Notas" />
+                                <textarea
+                                    id="notes"
+                                    name="notes"
+                                    rows="3"
+                                    class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                                    placeholder="Motivo del movimiento o comentario opcional"
+                                >{{ old('notes') }}</textarea>
+                                <x-input-error :messages="$errors->get('notes')" class="mt-2" />
+                            </div>
+
+                            <button type="submit"
+                                    class="rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
+                                Registrar movimiento
+                            </button>
+                        </form>
+                    @else
+                        <p class="mt-2 text-sm text-slate-500">
+                            Solo los administradores pueden registrar entradas o salidas de stock.
+                        </p>
+                    @endif
                 </div>
 
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-6">
+                <div class="rounded-2xl border border-slate-200 bg-white p-6">
                     <h3 class="text-sm font-medium text-slate-900">
                         Historial de movimientos
                     </h3>
+
+                    <div class="mt-5 space-y-3">
+                        @forelse ($movements as $movement)
+                            <div class="rounded-xl border border-slate-200 p-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-900">
+                                            {{ $movement->type === 'in' ? 'Entrada' : 'Salida' }}
+                                            de {{ $movement->quantity }} unidades
+                                        </p>
+
+                                        <p class="mt-1 text-xs text-slate-500">
+                                            Stock: {{ $movement->stock_before }} → {{ $movement->stock_after }}
+                                        </p>
+
+                                        @if ($movement->notes)
+                                            <p class="mt-2 text-sm text-slate-600">
+                                                {{ $movement->notes }}
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                    <div class="text-right text-xs text-slate-500">
+                                        <p>{{ $movement->created_at->format('d/m/Y H:i') }}</p>
+                                        <p>{{ $movement->user->name }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-sm text-slate-500">
+                                Todavía no hay movimientos registrados para este artículo.
+                            </p>
+                        @endforelse
+                    </div>
+
+                    @if ($movements->hasPages())
+                        <div class="mt-5">
+                            {{ $movements->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

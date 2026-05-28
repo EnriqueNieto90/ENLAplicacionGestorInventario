@@ -56,10 +56,15 @@ class ItemController extends Controller
 
     public function show(Item $item): View
     {
-        // Carga la categoría asociada al artículo antes de mostrar el detalle
+        // Carga la categoría y los movimientos recientes con su usuario
         $item->load('category');
 
-        return view('items.show', compact('item'));
+        $movements = $item->stockMovements()
+            ->with('user')
+            ->latest('created_at')
+            ->paginate(5);
+
+        return view('items.show', compact('item', 'movements'));
     }
 
     public function create(): View

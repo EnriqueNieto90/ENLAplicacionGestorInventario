@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\StockMovementController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas accesibles sin iniciar sesión
@@ -31,6 +32,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Detalle de artículo. Se debe declarar después de las rutas específicas para evitar conflictos con /items/create, etc
     Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
+
+    // Registro de movimientos de stock para cada artículo
+    Route::post('/items/{item}/stock-movements', [StockMovementController::class, 'store'])
+    ->name('items.stock-movements.store');
 
     // Rutas generadas por Breeze para editar el perfil del usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
