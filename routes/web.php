@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\StockMovementController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas accesibles sin iniciar sesión
@@ -11,9 +12,9 @@ Route::get('/', function () {
 });
 
 //Pantalla principal tras iniciar sesión que necesita usuario autenticado y verificado
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 
 //Rutas privadas. Todas las rutas de este grupo necesitan autenticación
