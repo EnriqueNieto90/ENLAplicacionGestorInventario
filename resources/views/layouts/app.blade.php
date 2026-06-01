@@ -37,6 +37,13 @@
                     </div>
                 @endif
                 {{ $slot }}
+                @if (session('error'))
+                    <div class="mx-auto mt-6 max-w-7xl px-4 sm:px-6 lg:px-8">
+                        <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {{ session('error') }}
+                        </div>
+                    </div>
+                @endif
             </main>
         </div>
     </body>
