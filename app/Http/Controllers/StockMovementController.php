@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class StockMovementController extends Controller
 {
@@ -61,4 +62,32 @@ class StockMovementController extends Controller
             ->route('items.show', $item)
             ->with('success', 'Movimiento de stock registrado correctamente.');
     }
+
+    public function index(Request $request): View
+    {
+        // Consulta base del historial, cargando artículo y usuario relacionados
+        $query = StockMovement::with(['item.category', 'user']);
+
+        // Filtro por texto en nombre o SKU del artículo
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $query->whereHas('item', function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('sku', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filtro por tipo de movimiento: entrada o salida
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
+        $movements = $query->latest('created_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('stock-movements.index', compact('movements'));
+    }
+
 }

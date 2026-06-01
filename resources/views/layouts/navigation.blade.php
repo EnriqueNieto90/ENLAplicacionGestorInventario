@@ -21,6 +21,12 @@
                     <x-nav-link :href="route('items.index')" :active="request()->routeIs('items.*')">
                         Artículos
                     </x-nav-link>
+                    <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
+                        Categorías
+                    </x-nav-link>
+                    <x-nav-link :href="route('stock-movements.index')" :active="request()->routeIs('stock-movements.*')">
+                        Movimientos
+                    </x-nav-link>
                 </div>
             </div>
 

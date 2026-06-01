@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\DashboardController;
@@ -21,6 +22,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 Route::middleware(['auth'])->group(function () {
     // Consulta del inventario permitida para empleados y administradores
     Route::get('/items', [ItemController::class, 'index'])->name('items.index');
+    // Consulta de categorías permitida para empleados y administradores
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    // Consulta del movimientos de stock permitida para empleados y administradores
+    Route::get('/movements', [StockMovementController::class, 'index'])->name('stock-movements.index');
 
     //Solo los usuarios con rol administrador pueden crear, editar o dar de baja artículos
     Route::middleware(['admin'])->group(function () {
@@ -29,6 +34,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
         Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
         Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
+        
+        // Rutas para gestión de categorías, solo accesibles para administradores
+        Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     });
 
     // Detalle de artículo. Se debe declarar después de las rutas específicas para evitar conflictos con /items/create, etc
