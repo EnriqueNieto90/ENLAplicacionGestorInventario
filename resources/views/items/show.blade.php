@@ -9,21 +9,34 @@
 
             <div class="flex flex-wrap gap-3">
                 @if (auth()->user()->isAdmin())
-                    <a href="{{ route('items.edit', $item) }}"
-                    class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
-                        Editar artículo
-                    </a>
+                    @if ($item->is_active)
+                        <a href="{{ route('items.edit', $item) }}"
+                        class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
+                            Editar artículo
+                        </a>
 
-                    <form method="POST" action="{{ route('items.destroy', $item) }}"
-                        onsubmit="return confirm('¿Seguro que quieres dar de baja este artículo?');">
-                        @csrf
-                        @method('DELETE')
+                        <form method="POST" action="{{ route('items.destroy', $item) }}"
+                            onsubmit="return confirm('¿Seguro que quieres dar de baja este artículo?');">
+                            @csrf
+                            @method('DELETE')
 
-                        <button type="submit"
-                                class="inline-flex items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50">
-                            Dar de baja
-                        </button>
-                    </form>
+                            <button type="submit"
+                                    class="inline-flex items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50">
+                                Dar de baja
+                            </button>
+                        </form>
+                    @else
+                        <form method="POST" action="{{ route('items.restore', $item) }}"
+                            onsubmit="return confirm('¿Seguro que quieres rehabilitar este artículo?');">
+                            @csrf
+                            @method('PATCH')
+
+                            <button type="submit"
+                                    class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700">
+                                Rehabilitar artículo
+                            </button>
+                        </form>
+                    @endif
                 @endif
 
                 <a href="{{ route('items.index') }}"
@@ -130,7 +143,7 @@
                         Gestión de stock
                     </h3>
 
-                    @if (auth()->user()->isAdmin())
+                    @if (auth()->user()->isAdmin() && $item->is_active)
                         <form method="POST" action="{{ route('items.stock-movements.store', $item) }}" class="mt-5 space-y-5">
                             @csrf
 
@@ -183,9 +196,13 @@
                                 Registrar movimiento
                             </button>
                         </form>
+                    @elseif (! $item->is_active)
+                        <p class="mt-2 text-sm text-slate-500">
+                            Este artículo está dado de baja. Rehabilítalo para volver a registrar movimientos.
+                        </p>
                     @else
                         <p class="mt-2 text-sm text-slate-500">
-                            Solo los administradores pueden registrar entradas o salidas de stock.
+                            Solo los administradores pueden registrar entradas, salidas o ajustes de stock.
                         </p>
                     @endif
                 </div>

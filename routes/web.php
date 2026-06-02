@@ -29,12 +29,14 @@ Route::middleware(['auth'])->group(function () {
 
     //Solo los usuarios con rol administrador pueden crear, editar o dar de baja artículos
     Route::middleware(['admin'])->group(function () {
+        // Rutas para gestión de artículos
         Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
         Route::post('/items', [ItemController::class, 'store'])->name('items.store');
         Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
         Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
         Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
-        
+        Route::patch('/items/{item}/restore', [ItemController::class, 'restore'])->name('items.restore');
+
         // Rutas para gestión de categorías, solo accesibles para administradores
         Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');

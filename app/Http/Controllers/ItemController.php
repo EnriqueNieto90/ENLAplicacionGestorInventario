@@ -13,9 +13,18 @@ class ItemController extends Controller
 {
     public function index(Request $request): View
     {
-        // Consulta base de artículos activos junto con su categoría
-        $query = Item::with('category')
-            ->where('is_active', true);
+        // Construye la consulta base para cargar los artículos con su categoría
+        $query = Item::with('category');
+
+        if (auth()->user()->isAdmin()) {
+            match ($request->input('active', 'active')) {
+                'inactive' => $query->where('is_active', false),
+                'all' => null,
+                default => $query->where('is_active', true),
+            };
+        } else {
+            $query->where('is_active', true);
+        }
 
         // Búsqueda por texto en SKU, nombre o descripción
         if ($request->filled('search')) {
@@ -94,6 +103,18 @@ class ItemController extends Controller
         return redirect()
             ->route('items.show', $item)
             ->with('success', 'Artículo creado correctamente.');
+    }
+
+    public function restore(Item $item): RedirectResponse
+    {
+        // Rehabilita un artículo dado de baja lógicamente
+        $item->update([
+            'is_active' => true,
+        ]);
+
+        return redirect()
+            ->route('items.show', $item)
+            ->with('success', 'Artículo rehabilitado correctamente.');
     }
 
     public function edit(Item $item): View
