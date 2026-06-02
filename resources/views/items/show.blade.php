@@ -144,12 +144,13 @@
                                 >
                                     <option value="in" @selected(old('type') === 'in')>Entrada de stock</option>
                                     <option value="out" @selected(old('type') === 'out')>Salida de stock</option>
+                                    <option value="adjustment" @selected(old('type') === 'adjustment')>Ajuste de inventario</option>
                                 </select>
                                 <x-input-error :messages="$errors->get('type')" class="mt-2" />
                             </div>
 
                             <div>
-                                <x-input-label for="quantity" value="Cantidad" />
+                                <x-input-label for="quantity" value="Cantidad / stock real contado" />
                                 <x-text-input
                                     id="quantity"
                                     name="quantity"
@@ -159,6 +160,9 @@
                                     value="{{ old('quantity') }}"
                                     required
                                 />
+                                <p class="mt-2 text-xs text-slate-500">
+                                    En entradas y salidas indica la cantidad movida. En ajustes indica el stock real contado físicamente.
+                                </p>
                                 <x-input-error :messages="$errors->get('quantity')" class="mt-2" />
                             </div>
 
@@ -196,11 +200,13 @@
                             <div class="rounded-xl border border-slate-200 p-4">
                                 <div class="flex items-start justify-between gap-4">
                                     <div>
-                                        <p class="text-sm font-medium text-slate-900">
-                                            {{ $movement->type === 'in' ? 'Entrada' : 'Salida' }}
-                                            de {{ $movement->quantity }} unidades
-                                        </p>
-
+                                        @if ($movement->type === 'in')
+                                            Entrada de {{ $movement->quantity }} unidades
+                                        @elseif ($movement->type === 'out')
+                                            Salida de {{ $movement->quantity }} unidades
+                                        @else
+                                            Ajuste de inventario a {{ $movement->stock_after }} unidades
+                                        @endif
                                         <p class="mt-1 text-xs text-slate-500">
                                             Stock: {{ $movement->stock_before }} → {{ $movement->stock_after }}
                                         </p>

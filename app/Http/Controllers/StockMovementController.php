@@ -16,8 +16,8 @@ class StockMovementController extends Controller
     {
         // Valida el tipo de movimiento, la cantidad y las notas opcionales
         $validated = $request->validate([
-            'type' => ['required', 'in:in,out'],
-            'quantity' => ['required', 'integer', 'min:1'],
+            'type' => ['required', 'in:in,out,adjustment'],
+            'quantity' => ['required', 'integer', 'min:0'],
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 
@@ -30,18 +30,21 @@ class StockMovementController extends Controller
             $stockBefore = $item->stock;
             $quantity = (int) $validated['quantity'];
 
-            // Regla de negocio por la que no se puede sacar más stock del disponible
+            // Regla de negocio: en una salida no se puede sacar más stock del disponible
             if ($validated['type'] === 'out' && $quantity > $stockBefore) {
                 throw ValidationException::withMessages([
                     'quantity' => 'No se puede registrar una salida superior al stock disponible.',
                 ]);
             }
 
-            $stockAfter = $validated['type'] === 'in'
-                ? $stockBefore + $quantity
-                : $stockBefore - $quantity;
+            // Calcula el stock resultante según el tipo de movimiento
+            $stockAfter = match ($validated['type']) {
+                'in' => $stockBefore + $quantity,
+                'out' => $stockBefore - $quantity,
+                'adjustment' => $quantity,
+            };
 
-            // Registra el movimiento con trazabilidad completa (tipo, cantidad, stock antes/después, usuario, notas)
+            // En adjustment, quantity representa el stock real contado y no una cantidad a sumar o restar
             StockMovement::create([
                 'item_id' => $item->id,
                 'user_id' => auth()->id(),

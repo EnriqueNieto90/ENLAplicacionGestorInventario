@@ -45,6 +45,9 @@
                                 <option value="out" @selected(request('type') === 'out')>
                                     Salidas
                                 </option>
+                                <option value="adjustment" @selected(request('type') === 'adjustment')>
+                                    Ajustes
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -102,9 +105,13 @@
                                             <span class="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">
                                                 Entrada
                                             </span>
-                                        @else
+                                        @elseif ($movement->type === 'out')
                                             <span class="inline-flex rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 ring-1 ring-red-200">
                                                 Salida
+                                            </span>
+                                        @else
+                                            <span class="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-200">
+                                                Ajuste
                                             </span>
                                         @endif
                                     </td>
@@ -120,7 +127,11 @@
                                     </td>
 
                                     <td class="whitespace-nowrap px-6 py-4 text-right text-sm text-slate-700">
-                                        {{ $movement->quantity }}
+                                        @if ($movement->type === 'adjustment')
+                                            Stock real: {{ $movement->stock_after }}
+                                        @else
+                                            {{ $movement->quantity }}
+                                        @endif
                                     </td>
 
                                     <td class="whitespace-nowrap px-6 py-4 text-right text-sm text-slate-700">

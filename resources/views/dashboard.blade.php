@@ -55,8 +55,13 @@
                             <div class="flex items-start justify-between gap-4 rounded-xl border border-slate-200 p-4">
                                 <div>
                                     <p class="text-sm font-medium text-slate-900">
-                                        {{ $movement->type === 'in' ? 'Entrada' : 'Salida' }}
-                                        de {{ $movement->quantity }} unidades
+                                        @if ($movement->type === 'in')
+                                            Entrada de {{ $movement->quantity }} unidades
+                                        @elseif ($movement->type === 'out')
+                                            Salida de {{ $movement->quantity }} unidades
+                                        @else
+                                            Ajuste a {{ $movement->stock_after }} unidades
+                                        @endif
                                     </p>
 
                                     <p class="mt-1 text-sm text-slate-600">
