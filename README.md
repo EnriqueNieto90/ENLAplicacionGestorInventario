@@ -204,6 +204,20 @@ El usuario empleado puede consultar el inventario, pero no realizar acciones de 
 
 ---
 
+## API REST
+
+La aplicación incluye una API REST de consulta que devuelve información del inventario en formato JSON.
+
+Endpoints disponibles:
+
+```text
+GET /api/items
+GET /api/items/{sku}
+GET /api/items/critical
+```
+
+---
+
 ## Ramas del repositorio
 
 - `master`: rama principal estable.
