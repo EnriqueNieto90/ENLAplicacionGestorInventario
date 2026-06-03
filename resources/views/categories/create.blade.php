@@ -17,11 +17,11 @@
     <div class="py-8">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
-                <form method="POST" action="{{ route('categories.store') }}" class="space-y-6">
+                <form method="POST" action="{{ route('categories.store') }}" class="space-y-6" novalidate>
                     @csrf
 
                     <div>
-                        <x-input-label for="name" value="Nombre" />
+                        <x-input-label for="name" value="Nombre" :required="true" />
                         <x-text-input
                             id="name"
                             name="name"
@@ -40,7 +40,7 @@
                             id="description"
                             name="description"
                             rows="4"
-                            class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                            class="mt-1 block w-full rounded-md border-slate-300 bg-white shadow-sm focus:border-marca-600 focus:ring-marca-600"
                             placeholder="Descripción opcional de la categoría"
                         >{{ old('description') }}</textarea>
                         <x-input-error :messages="$errors->get('description')" class="mt-2" />

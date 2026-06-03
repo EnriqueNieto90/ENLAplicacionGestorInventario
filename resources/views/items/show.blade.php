@@ -146,15 +146,15 @@
                     </h3>
 
                     @can('adjustStock', $item)
-                        <form method="POST" action="{{ route('items.stock-movements.store', $item) }}" class="mt-5 space-y-5">
+                        <form method="POST" action="{{ route('items.stock-movements.store', $item) }}" class="mt-5 space-y-5" novalidate>
                             @csrf
 
                             <div>
-                                <x-input-label for="type" value="Tipo de movimiento" />
+                                <x-input-label for="type" value="Tipo de movimiento" :required="true" />
                                 <select
                                     id="type"
                                     name="type"
-                                    class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                                    class="mt-1 block w-full rounded-md border-slate-300 bg-yellow-50 shadow-sm focus:border-marca-600 focus:ring-marca-600"
                                     required
                                 >
                                     <option value="in" @selected(old('type') === 'in')>Entrada de stock</option>
@@ -165,7 +165,7 @@
                             </div>
 
                             <div>
-                                <x-input-label for="quantity" value="Cantidad / stock real contado" />
+                                <x-input-label for="quantity" value="Cantidad / stock real contado" :required="true" />
                                 <x-text-input
                                     id="quantity"
                                     name="quantity"
@@ -187,7 +187,7 @@
                                     id="notes"
                                     name="notes"
                                     rows="3"
-                                    class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                                    class="mt-1 block w-full rounded-md border-slate-300 bg-white shadow-sm focus:border-marca-600 focus:ring-marca-600"
                                     placeholder="Motivo del movimiento o comentario opcional"
                                 >{{ old('notes') }}</textarea>
                                 <x-input-error :messages="$errors->get('notes')" class="mt-2" />

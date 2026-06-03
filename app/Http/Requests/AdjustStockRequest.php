@@ -22,6 +22,20 @@ class AdjustStockRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'type.required' => 'Debes seleccionar un tipo de movimiento.',
+            'type.in' => 'El tipo de movimiento seleccionado no es válido.',
+
+            'quantity.required' => 'La cantidad es obligatoria.',
+            'quantity.integer' => 'La cantidad debe ser un número entero.',
+            'quantity.min' => 'La cantidad no puede ser negativa.',
+
+            'notes.max' => 'Las notas no pueden tener más de 500 caracteres.',
+        ];
+    }
+
     public function after(): array
     {
         return [

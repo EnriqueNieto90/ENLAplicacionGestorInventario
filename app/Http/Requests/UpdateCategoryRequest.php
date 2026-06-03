@@ -30,4 +30,13 @@ class UpdateCategoryRequest extends FormRequest
             'description' => ['nullable', 'string'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre de la categoría es obligatorio.',
+            'name.unique' => 'Ya existe otra categoría con ese nombre.',
+            'name.max' => 'El nombre de la categoría no puede tener más de 255 caracteres.',
+        ];
+    }
 }
