@@ -7,7 +7,9 @@ use App\Models\Item;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Validation\Rule;
+// Importa las clases de request para validación específica
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
 
 class ItemController extends Controller
 {
@@ -84,21 +86,10 @@ class ItemController extends Controller
         return view('items.create', compact('categories'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreItemRequest $request): RedirectResponse
     {
-        // Valida los datos antes de crear el artículo
-        $validated = $request->validate([
-            'sku' => ['required', 'string', 'max:255', 'unique:items,sku'],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'min_stock' => ['required', 'integer', 'min:0'],
-        ]);
-
-        $validated['is_active'] = true;
-
-        $item = Item::create($validated);
+        // Crea el artículo con los datos validados por StoreItemRequest
+        $item = Item::create($request->validated());
 
         return redirect()
             ->route('items.show', $item)
@@ -125,23 +116,10 @@ class ItemController extends Controller
         return view('items.edit', compact('item', 'categories'));
     }
 
-    public function update(Request $request, Item $item): RedirectResponse
+    public function update(UpdateItemRequest $request, Item $item): RedirectResponse
     {
-        // Valida los datos permitiendo mantener el mismo SKU del artículo actual
-        $validated = $request->validate([
-            'sku' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('items', 'sku')->ignore($item->id),
-            ],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
-            'min_stock' => ['required', 'integer', 'min:0'],
-        ]);
-
-        $item->update($validated);
+        // Actualiza la ficha del artículo con los datos validados
+        $item->update($request->validated());
 
         return redirect()
             ->route('items.show', $item)

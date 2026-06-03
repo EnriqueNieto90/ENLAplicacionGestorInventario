@@ -2,28 +2,33 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateItemRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        // Solo los administradores pueden modificar artículos
+        return $this->user()?->isAdmin() ?? false;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        // Obtiene el artículo recibido por Route Model Binding
+        $item = $this->route('item');
+
         return [
-            //
+            'sku' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('items', 'sku')->ignore($item?->id),
+            ],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'min_stock' => ['required', 'integer', 'min:0'],
         ];
     }
 }

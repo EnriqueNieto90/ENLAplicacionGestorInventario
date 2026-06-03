@@ -17,6 +17,7 @@ class UpdateCategoryRequest extends FormRequest
     // Reglas de validación para el formulario de actualización de categorías
     public function rules(): array
     {
+        // Obtiene la categoría recibida por Route Model Binding.
         $category = $this->route('category');
 
         return [

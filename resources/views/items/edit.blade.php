@@ -81,16 +81,12 @@
 
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
-                            <x-input-label for="stock" value="Stock actual" />
-                            <x-text-input
-                                id="stock"
-                                type="number"
-                                class="mt-1 block w-full bg-slate-100 text-slate-500"
-                                value="{{ $item->stock }}"
-                                disabled
-                            />
+                            <x-input-label value="Stock actual" />
+                            <p class="mt-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
+                                {{ $item->stock }} unidades
+                            </p>
                             <p class="mt-2 text-xs text-slate-500">
-                                El stock se modifica mediante movimientos de entrada o salida.
+                                El stock se modifica desde la gestión de movimientos, no desde la edición del artículo.
                             </p>
                         </div>
 
