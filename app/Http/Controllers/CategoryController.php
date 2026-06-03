@@ -5,14 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 // Importa las clases de request para validación específica
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
+    use AuthorizesRequests;
+    
     public function index(): View
     {
+        // Autoriza que el usuario pueda ver la lista de categorías según su rol
+        $this->authorize('viewAny', Category::class);
+
         // Carga categorías con recuentos útiles para el inventario
         $categories = Category::withCount([
             'items as active_items_count' => function ($query) {
@@ -36,11 +42,17 @@ class CategoryController extends Controller
 
     public function create(): View
     {
+        // Autoriza que el usuario pueda crear categorías según su rol
+        $this->authorize('create', Category::class);
+
         return view('categories.create');
     }
 
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
+        // Autoriza que el usuario pueda crear categorías según su rol
+        $this->authorize('create', Category::class);
+
         // Obtiene los datos ya validados por StoreCategoryRequest
         $validated = $request->validated();
 
@@ -54,11 +66,17 @@ class CategoryController extends Controller
 
     public function edit(Category $category): View
     {
+        // Autoriza que el usuario pueda modificar la categoría según su rol
+        $this->authorize('update', $category);
+
         return view('categories.edit', compact('category'));
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
+        // Autoriza que el usuario pueda modificar la categoría según su rol
+        $this->authorize('update', $category);
+
         // Permite mantener el mismo nombre de la categoría actual
         $category->update($request->validated());
 
@@ -75,6 +93,9 @@ class CategoryController extends Controller
                 ->route('categories.index')
                 ->with('error', 'No se puede eliminar una categoría con artículos asociados.');
         }
+
+        // Autoriza que el usuario pueda eliminar la categoría según su rol
+         $this->authorize('delete', $category);
 
         $category->delete();
 

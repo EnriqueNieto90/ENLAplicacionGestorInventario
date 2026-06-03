@@ -7,14 +7,20 @@ use App\Models\Item;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 // Importa las clases de request para validación específica
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 
 class ItemController extends Controller
 {
+    use AuthorizesRequests;
+    
     public function index(Request $request): View
     {
+        // Autoriza que el usuario pueda ver la lista de artículos según su rol
+        $this->authorize('viewAny', Item::class);
+
         // Construye la consulta base para cargar los artículos con su categoría
         $query = Item::with('category');
 
@@ -67,6 +73,9 @@ class ItemController extends Controller
 
     public function show(Item $item): View
     {
+        // Autoriza que el usuario pueda ver el artículo según su rol
+        $this->authorize('view', $item);
+
         // Carga la categoría y los movimientos recientes con su usuario
         $item->load('category');
 
@@ -80,6 +89,9 @@ class ItemController extends Controller
 
     public function create(): View
     {
+        // Autoriza que el usuario pueda crear artículos según su rol
+        $this->authorize('create', Item::class);
+
         // Carga las categorías disponibles para el select del formulario
         $categories = Category::orderBy('name')->get();
 
@@ -88,6 +100,9 @@ class ItemController extends Controller
 
     public function store(StoreItemRequest $request): RedirectResponse
     {
+        // Autoriza que el usuario pueda crear artículos según su rol
+        $this->authorize('create', Item::class);
+        
         // Crea el artículo con los datos validados por StoreItemRequest
         $item = Item::create($request->validated());
 
@@ -98,6 +113,9 @@ class ItemController extends Controller
 
     public function restore(Item $item): RedirectResponse
     {
+        // Autoriza que el usuario pueda rehabilitar el artículo según su rol
+        $this->authorize('restore', $item);
+
         // Rehabilita un artículo dado de baja lógicamente
         $item->update([
             'is_active' => true,
@@ -109,7 +127,10 @@ class ItemController extends Controller
     }
 
     public function edit(Item $item): View
-    {
+    {   
+        // Autoriza que el usuario pueda modificar el artículo según su rol
+        $this->authorize('update', $item);
+
         // Carga las categorías para poder cambiar la clasificación del artículo
         $categories = Category::orderBy('name')->get();
 
@@ -118,6 +139,9 @@ class ItemController extends Controller
 
     public function update(UpdateItemRequest $request, Item $item): RedirectResponse
     {
+        // Autoriza que el usuario pueda modificar el artículo según su rol
+        $this->authorize('update', $item);
+
         // Actualiza la ficha del artículo con los datos validados
         $item->update($request->validated());
 
@@ -128,6 +152,9 @@ class ItemController extends Controller
 
     public function destroy(Item $item): RedirectResponse
     {
+        // Autoriza que el usuario pueda dar de baja el artículo según su rol
+        $this->authorize('delete', $item);
+
         // Baja lógica: el artículo se desactiva, pero no se elimina físicamente
         $item->update([
             'is_active' => false,

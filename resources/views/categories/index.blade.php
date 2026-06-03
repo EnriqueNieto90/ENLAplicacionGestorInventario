@@ -7,12 +7,12 @@
                 </h2>
             </div>
 
-            @if (auth()->user()->isAdmin())
+            @can('create', App\Models\Category::class)
                 <a href="{{ route('categories.create') }}"
-                class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
+                   class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
                     Nueva categoría
                 </a>
-            @endif
+            @endcan
         </div>
     </x-slot>
 
@@ -64,25 +64,30 @@
                                 Ver artículos de esta categoría
                             </a>
                         </div>
-                        @if (auth()->user()->isAdmin())
+
+                        @if (auth()->user()->can('update', $category) || auth()->user()->can('delete', $category))
                             <div class="mt-4 flex flex-wrap items-center gap-3 border-t border-slate-200 pt-4">
-                                <a href="{{ route('categories.edit', $category) }}"
-                                class="inline-flex items-center text-sm font-medium text-slate-700 hover:text-slate-900 hover:underline">
-                                    Editar
-                                </a>
+                                @can('update', $category)
+                                    <a href="{{ route('categories.edit', $category) }}"
+                                       class="inline-flex items-center text-sm font-medium text-slate-700 hover:text-slate-900 hover:underline">
+                                        Editar
+                                    </a>
+                                @endcan
 
-                                <form method="POST"
-                                    action="{{ route('categories.destroy', $category) }}"
-                                    class="inline-flex items-center"
-                                    onsubmit="return confirm('¿Seguro que quieres eliminar esta categoría?');">
-                                    @csrf
-                                    @method('DELETE')
+                                @can('delete', $category)
+                                    <form method="POST"
+                                          action="{{ route('categories.destroy', $category) }}"
+                                          class="inline-flex items-center"
+                                          onsubmit="return confirm('¿Seguro que quieres eliminar esta categoría?');">
+                                        @csrf
+                                        @method('DELETE')
 
-                                    <button type="submit"
-                                            class="inline-flex items-center text-sm font-medium text-red-700 hover:text-red-900 hover:underline">
-                                        Eliminar
-                                    </button>
-                                </form>
+                                        <button type="submit"
+                                                class="inline-flex items-center text-sm font-medium text-red-700 hover:text-red-900 hover:underline">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                @endcan
                             </div>
                         @endif
                     </div>

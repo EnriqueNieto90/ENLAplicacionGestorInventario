@@ -9,12 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\AdjustStockRequest;
 
 class StockMovementController extends Controller
 {
+    use AuthorizesRequests;
+    
     public function store(AdjustStockRequest $request, Item $item): RedirectResponse
     {
+        // Autoriza que el usuario pueda ajustar el stock del artículo según su rol
+        $this->authorize('adjustStock', $item);
+
         // Valida el tipo de movimiento, la cantidad y las notas opcionales
         $validated = $request->validated();
 
