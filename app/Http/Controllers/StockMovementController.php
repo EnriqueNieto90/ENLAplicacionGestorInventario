@@ -9,17 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use App\Http\Requests\AdjustStockRequest;
 
 class StockMovementController extends Controller
 {
-    public function store(Request $request, Item $item): RedirectResponse
+    public function store(AdjustStockRequest $request, Item $item): RedirectResponse
     {
         // Valida el tipo de movimiento, la cantidad y las notas opcionales
-        $validated = $request->validate([
-            'type' => ['required', 'in:in,out,adjustment'],
-            'quantity' => ['required', 'integer', 'min:0'],
-            'notes' => ['nullable', 'string', 'max:500'],
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $item): void {
             // Bloquea el artículo para evitar inconsistencias si hay operaciones simultáneas

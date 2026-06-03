@@ -168,7 +168,7 @@
                                     id="quantity"
                                     name="quantity"
                                     type="number"
-                                    min="1"
+                                    min="0"
                                     class="mt-1 block w-full"
                                     value="{{ old('quantity') }}"
                                     required
