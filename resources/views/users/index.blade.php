@@ -47,6 +47,9 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
                                     Alta
                                 </th>
+                                <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500">
+                                    Acciones
+                                </th>
                             </tr>
                         </thead>
 
@@ -92,10 +95,18 @@
                                     <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
                                         {{ $user->created_at->format('d/m/Y') }}
                                     </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+                                        @can('update', $user)
+                                            <a href="{{ route('users.edit', $user) }}"
+                                            class="font-medium text-marca-700 hover:text-marca-900 hover:underline">
+                                                Editar
+                                            </a>
+                                        @endcan
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center text-sm text-slate-500">
+                                    <td colspan="5" class="px-6 py-8 text-center text-sm text-slate-500">
                                         No hay usuarios registrados.
                                     </td>
                                 </tr>
