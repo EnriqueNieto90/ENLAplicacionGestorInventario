@@ -8,14 +8,16 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                @if (auth()->user()->isAdmin())
+                @can('update', $item)
                     <a href="{{ route('items.edit', $item) }}"
-                    class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
+                       class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
                         Editar artículo
                     </a>
+                @endcan
 
+                @can('delete', $item)
                     <form method="POST" action="{{ route('items.destroy', $item) }}"
-                        onsubmit="return confirm('¿Seguro que quieres dar de baja este artículo?');">
+                          onsubmit="return confirm('¿Seguro que quieres dar de baja este artículo?');">
                         @csrf
                         @method('DELETE')
 
@@ -24,10 +26,23 @@
                             Dar de baja
                         </button>
                     </form>
-                @endif
+                @endcan
+
+                @can('restore', $item)
+                    <form method="POST" action="{{ route('items.restore', $item) }}"
+                          onsubmit="return confirm('¿Seguro que quieres rehabilitar este artículo?');">
+                        @csrf
+                        @method('PATCH')
+
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700">
+                            Rehabilitar artículo
+                        </button>
+                    </form>
+                @endcan
 
                 <a href="{{ route('items.index') }}"
-                class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                   class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
                     Volver al listado
                 </a>
             </div>
@@ -123,21 +138,128 @@
                 </div>
             </div>
 
-            {{-- Bloque reservado para futuras acciones e historial --}}
+            {{-- Bloque para acciones e historial --}}
             <div class="grid gap-6 lg:grid-cols-2">
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-6">
+                <div class="rounded-2xl border border-slate-200 bg-white p-6">
                     <h3 class="text-sm font-medium text-slate-900">
                         Gestión de stock
                     </h3>
+
+                    @can('adjustStock', $item)
+                        <form method="POST" action="{{ route('items.stock-movements.store', $item) }}" class="mt-5 space-y-5" novalidate>
+                            @csrf
+
+                            <div>
+                                <x-input-label for="type" value="Tipo de movimiento" :required="true" />
+                                <select
+                                    id="type"
+                                    name="type"
+                                    class="mt-1 block w-full rounded-md border-slate-300 bg-yellow-50 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                                    required
+                                >
+                                    <option value="in" @selected(old('type') === 'in')>Entrada de stock</option>
+                                    <option value="out" @selected(old('type') === 'out')>Salida de stock</option>
+                                    <option value="adjustment" @selected(old('type') === 'adjustment')>Ajuste de inventario</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="quantity" value="Cantidad / stock real contado" :required="true" />
+                                <x-text-input
+                                    id="quantity"
+                                    name="quantity"
+                                    type="number"
+                                    min="0"
+                                    class="mt-1 block w-full"
+                                    value="{{ old('quantity') }}"
+                                    required
+                                />
+                                <p class="mt-2 text-xs text-slate-500">
+                                    En entradas y salidas indica la cantidad movida. En ajustes indica el stock real contado físicamente.
+                                </p>
+                                <x-input-error :messages="$errors->get('quantity')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="notes" value="Notas" />
+                                <textarea
+                                    id="notes"
+                                    name="notes"
+                                    rows="3"
+                                    class="mt-1 block w-full rounded-md border-slate-300 bg-white shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                                    placeholder="Motivo del movimiento o comentario opcional"
+                                >{{ old('notes') }}</textarea>
+                                <x-input-error :messages="$errors->get('notes')" class="mt-2" />
+                            </div>
+
+                            <button type="submit"
+                                    class="rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
+                                Registrar movimiento
+                            </button>
+                        </form>
+                    @else
+                        @if (! $item->is_active)
+                            <p class="mt-2 text-sm text-slate-500">
+                                Este artículo está dado de baja. Rehabilítalo para volver a registrar movimientos.
+                            </p>
+                        @else
+                            <p class="mt-2 text-sm text-slate-500">
+                                Solo los administradores pueden registrar entradas, salidas o ajustes de stock.
+                            </p>
+                        @endif
+                    @endcan
                 </div>
 
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-6">
+                <div class="rounded-2xl border border-slate-200 bg-white p-6">
                     <h3 class="text-sm font-medium text-slate-900">
                         Historial de movimientos
                     </h3>
+
+                    <div class="mt-5 space-y-3">
+                        @forelse ($movements as $movement)
+                            <div class="rounded-xl border border-slate-200 p-4">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        @if ($movement->type === 'in')
+                                            Entrada de {{ $movement->quantity }} unidades
+                                        @elseif ($movement->type === 'out')
+                                            Salida de {{ $movement->quantity }} unidades
+                                        @else
+                                            Ajuste de inventario a {{ $movement->stock_after }} unidades
+                                        @endif
+
+                                        <p class="mt-1 text-xs text-slate-500">
+                                            Stock: {{ $movement->stock_before }} → {{ $movement->stock_after }}
+                                        </p>
+
+                                        @if ($movement->notes)
+                                            <p class="mt-2 text-sm text-slate-600">
+                                                {{ $movement->notes }}
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                    <div class="text-right text-xs text-slate-500">
+                                        <p>{{ $movement->created_at->format('d/m/Y H:i') }}</p>
+                                        <p>{{ $movement->user->name }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-sm text-slate-500">
+                                Todavía no hay movimientos registrados para este artículo.
+                            </p>
+                        @endforelse
+                    </div>
+
+                    @if ($movements->hasPages())
+                        <div class="mt-5">
+                            {{ $movements->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

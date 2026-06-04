@@ -4,29 +4,52 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Usuario administrador: podrá gestionar artículos y stock
-        User::create([
-            'name' => 'Administrador',
-            'email' => 'admin@inventario.test',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
+        $users = [
+            [
+                'name' => 'Enrique Nieto',
+                'email' => 'admin@ferreteria.test',
+                'password' => 'password',
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Laura Martínez',
+                'email' => 'direccion@ferreteria.test',
+                'password' => 'password',
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Carlos Ramos',
+                'email' => 'almacen@ferreteria.test',
+                'password' => 'password',
+                'role' => 'employee',
+            ],
+            [
+                'name' => 'Marta Sánchez',
+                'email' => 'ventas@ferreteria.test',
+                'password' => 'password',
+                'role' => 'employee',
+            ],
+            [
+                'name' => 'Iván García',
+                'email' => 'compras@ferreteria.test',
+                'password' => 'password',
+                'role' => 'employee',
+            ],
+            [
+                'name' => 'Sara López',
+                'email' => 'mostrador@ferreteria.test',
+                'password' => 'password',
+                'role' => 'employee',
+            ],
+        ];
 
-        // Usuario empleado: solo podrá consultar el inventario
-        User::create([
-            'name' => 'Empleado',
-            'email' => 'empleado@inventario.test',
-            'password' => Hash::make('password'),
-            'role' => 'employee',
-        ]);
+        foreach ($users as $user) {
+            User::create($user);
+        }
     }
 }

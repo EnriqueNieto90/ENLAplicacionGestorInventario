@@ -7,15 +7,32 @@ use App\Models\Item;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+// Importa las clases de request para validación específica
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
 
 class ItemController extends Controller
 {
+    use AuthorizesRequests;
+    
     public function index(Request $request): View
     {
-        // Consulta base de artículos activos junto con su categoría
-        $query = Item::with('category')
-            ->where('is_active', true);
+        // Autoriza que el usuario pueda ver la lista de artículos según su rol
+        $this->authorize('viewAny', Item::class);
+
+        // Construye la consulta base para cargar los artículos con su categoría
+        $query = Item::with('category');
+
+        if (auth()->user()->isAdmin()) {
+            match ($request->input('active', 'active')) {
+                'inactive' => $query->where('is_active', false),
+                'all' => null,
+                default => $query->where('is_active', true),
+            };
+        } else {
+            $query->where('is_active', true);
+        }
 
         // Búsqueda por texto en SKU, nombre o descripción
         if ($request->filled('search')) {
@@ -56,66 +73,77 @@ class ItemController extends Controller
 
     public function show(Item $item): View
     {
-        // Carga la categoría asociada al artículo antes de mostrar el detalle
+        // Autoriza que el usuario pueda ver el artículo según su rol
+        $this->authorize('view', $item);
+
+        // Carga la categoría y los movimientos recientes con su usuario
         $item->load('category');
 
-        return view('items.show', compact('item'));
+        $movements = $item->stockMovements()
+            ->with('user')
+            ->latest('created_at')
+            ->paginate(5);
+
+        return view('items.show', compact('item', 'movements'));
     }
 
     public function create(): View
     {
+        // Autoriza que el usuario pueda crear artículos según su rol
+        $this->authorize('create', Item::class);
+
         // Carga las categorías disponibles para el select del formulario
         $categories = Category::orderBy('name')->get();
 
         return view('items.create', compact('categories'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreItemRequest $request): RedirectResponse
     {
-        // Valida los datos antes de crear el artículo
-        $validated = $request->validate([
-            'sku' => ['required', 'string', 'max:255', 'unique:items,sku'],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'min_stock' => ['required', 'integer', 'min:0'],
-        ]);
-
-        $validated['is_active'] = true;
-
-        $item = Item::create($validated);
+        // Autoriza que el usuario pueda crear artículos según su rol
+        $this->authorize('create', Item::class);
+        
+        // Crea el artículo con los datos validados por StoreItemRequest
+        $item = Item::create($request->validated());
 
         return redirect()
             ->route('items.show', $item)
             ->with('success', 'Artículo creado correctamente.');
     }
 
-    public function edit(Item $item): View
+    public function restore(Item $item): RedirectResponse
     {
+        // Autoriza que el usuario pueda rehabilitar el artículo según su rol
+        $this->authorize('restore', $item);
+
+        // Rehabilita un artículo dado de baja lógicamente
+        $item->update([
+            'is_active' => true,
+        ]);
+
+        return redirect()
+            ->route('items.show', $item)
+            ->with('success', 'Artículo rehabilitado correctamente.');
+    }
+
+    public function edit(Item $item): View
+    {   
+        // Autoriza que el usuario pueda modificar el artículo según su rol
+        $this->authorize('update', $item);
+
         // Carga las categorías para poder cambiar la clasificación del artículo
         $categories = Category::orderBy('name')->get();
 
         return view('items.edit', compact('item', 'categories'));
     }
 
-    public function update(Request $request, Item $item): RedirectResponse
+    public function update(UpdateItemRequest $request, Item $item): RedirectResponse
     {
-        // Valida los datos permitiendo mantener el mismo SKU del artículo actual
-        $validated = $request->validate([
-            'sku' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('items', 'sku')->ignore($item->id),
-            ],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
-            'min_stock' => ['required', 'integer', 'min:0'],
-        ]);
+        // Autoriza que el usuario pueda modificar el artículo según su rol
+        $this->authorize('update', $item);
 
-        $item->update($validated);
+        // Actualiza la ficha del artículo con los datos validados
+        $item->update($request->validated());
 
         return redirect()
             ->route('items.show', $item)
@@ -124,6 +152,9 @@ class ItemController extends Controller
 
     public function destroy(Item $item): RedirectResponse
     {
+        // Autoriza que el usuario pueda dar de baja el artículo según su rol
+        $this->authorize('delete', $item);
+
         // Baja lógica: el artículo se desactiva, pero no se elimina físicamente
         $item->update([
             'is_active' => false,

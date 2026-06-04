@@ -17,13 +17,13 @@
     <div class="py-8">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
-                <form method="POST" action="{{ route('items.update', $item) }}" class="space-y-6">
+                <form method="POST" action="{{ route('items.update', $item) }}" class="space-y-6" novalidate>
                     @csrf
                     @method('PUT')
 
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
-                            <x-input-label for="sku" value="SKU" />
+                            <x-input-label for="sku" value="SKU" :required="true" />
                             <x-text-input
                                 id="sku"
                                 name="sku"
@@ -36,7 +36,7 @@
                         </div>
 
                         <div>
-                            <x-input-label for="name" value="Nombre" />
+                            <x-input-label for="name" value="Nombre" :required="true" />
                             <x-text-input
                                 id="name"
                                 name="name"
@@ -55,17 +55,17 @@
                             id="description"
                             name="description"
                             rows="4"
-                            class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                            class="mt-1 block w-full rounded-md border-slate-300 bg-white shadow-sm focus:border-marca-600 focus:ring-marca-600"
                         >{{ old('description', $item->description) }}</textarea>
                         <x-input-error :messages="$errors->get('description')" class="mt-2" />
                     </div>
 
                     <div>
-                        <x-input-label for="category_id" value="Categoría" />
+                        <x-input-label for="category_id" value="Categoría" :required="true" />
                         <select
                             id="category_id"
                             name="category_id"
-                            class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                            class="mt-1 block w-full rounded-md border-slate-300 bg-yellow-50 shadow-sm focus:border-marca-600 focus:ring-marca-600"
                             required
                         >
                             <option value="">Selecciona una categoría</option>
@@ -81,21 +81,17 @@
 
                     <div class="grid gap-6 md:grid-cols-2">
                         <div>
-                            <x-input-label for="stock" value="Stock actual" />
-                            <x-text-input
-                                id="stock"
-                                type="number"
-                                class="mt-1 block w-full bg-slate-100 text-slate-500"
-                                value="{{ $item->stock }}"
-                                disabled
-                            />
+                            <x-input-label value="Stock actual" />
+                            <p class="mt-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
+                                {{ $item->stock }} unidades
+                            </p>
                             <p class="mt-2 text-xs text-slate-500">
-                                El stock se modifica mediante movimientos de entrada o salida.
+                                El stock se modifica desde la gestión de movimientos, no desde la edición del artículo.
                             </p>
                         </div>
 
                         <div>
-                            <x-input-label for="min_stock" value="Stock mínimo" />
+                            <x-input-label for="min_stock" value="Stock mínimo" :required="true" />
                             <x-text-input
                                 id="min_stock"
                                 name="min_stock"

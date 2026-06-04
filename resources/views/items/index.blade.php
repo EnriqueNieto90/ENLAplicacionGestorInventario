@@ -6,12 +6,12 @@
                     Artículos
                 </h2>
             </div>
-            @if (auth()->user()->isAdmin())
+            @can('create', App\Models\Item::class)
                 <a href="{{ route('items.create') }}"
                 class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
                     Nuevo artículo
                 </a>
-            @endif
+            @endcan
         </div>
     </x-slot>
 
@@ -26,7 +26,7 @@
                 </div>
 
                 <form method="GET" action="{{ route('items.index') }}" class="border-b border-slate-200 px-6 py-4">
-                    <div class="grid gap-4 lg:grid-cols-4">
+                    <div class="grid gap-4 lg:grid-cols-5">
                         <div class="lg:col-span-2">
                             <x-input-label for="search" value="Buscar artículo" />
                             <x-text-input
@@ -75,6 +75,26 @@
                                 </option>
                             </select>
                         </div>
+                        @if (auth()->user()->isAdmin())
+                            <div>
+                                <x-input-label for="active" value="Actividad" />
+                                <select
+                                    id="active"
+                                    name="active"
+                                    class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-marca-600 focus:ring-marca-600"
+                                >
+                                    <option value="active" @selected(request('active', 'active') === 'active')>
+                                        Activos
+                                    </option>
+                                    <option value="inactive" @selected(request('active') === 'inactive')>
+                                        Dados de baja
+                                    </option>
+                                    <option value="all" @selected(request('active') === 'all')>
+                                        Todos
+                                    </option>
+                                </select>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="mt-4 flex flex-wrap items-center gap-3">
@@ -148,6 +168,13 @@
                                         @if ($item->description)
                                             <div class="mt-1 text-xs text-slate-500">
                                                 {{ $item->description }}
+                                            </div>
+                                        @endif
+                                        @if (! $item->is_active)
+                                            <div class="mt-2">
+                                                <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 ring-1 ring-slate-200">
+                                                    Dado de baja
+                                                </span>
                                             </div>
                                         @endif
                                     </td>
