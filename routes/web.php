@@ -47,6 +47,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Rutas para gestión de usuarios, solo accesibles para administradores
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
     });
 
     // Detalle de artículo. Se debe declarar después de las rutas específicas para evitar conflictos con /items/create, etc

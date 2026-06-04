@@ -9,6 +9,13 @@
                     Consulta de usuarios registrados en el sistema.
                 </p>
             </div>
+
+            @can('create', App\Models\User::class)
+                <a href="{{ route('users.create') }}"
+                class="inline-flex items-center justify-center rounded-lg bg-marca-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-marca-700">
+                    Nuevo usuario
+                </a>
+            @endcan
         </div>
     </x-slot>
 
