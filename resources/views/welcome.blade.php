@@ -237,19 +237,19 @@
                                 </p>
                             </a>
 
-                            <a href="{{ url('/api/items/INF-001') }}" target="_blank"
+                            <a href="{{ url('/api/items/HER-MAN-001') }}" target="_blank"
                                class="block rounded-xl bg-white p-4 shadow-sm ring-1 ring-marca-100 transition hover:ring-marca-300">
                                 <div class="flex items-center justify-between">
                                     <span class="rounded bg-emerald-100 px-2 py-0.5 text-[11px] font-bold uppercase text-emerald-800">GET</span>
                                     <span class="text-xs text-slate-400">Por SKU</span>
                                 </div>
                                 <p class="mt-3 break-all font-mono text-sm font-semibold text-slate-900">
-                                    /api/items/INF-001
+                                    /api/items/HER-MAN-001
                                 </p>
                             </a>
 
                         </div>
-                        
+
                     </aside>
 
                 </section>
