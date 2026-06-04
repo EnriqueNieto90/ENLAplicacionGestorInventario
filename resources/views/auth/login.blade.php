@@ -55,13 +55,6 @@
                     Recordar sesión
                 </span>
             </label>
-
-            @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}"
-                   class="text-sm font-medium text-marca-700 transition hover:text-marca-900">
-                    ¿Olvidaste tu contraseña?
-                </a>
-            @endif
         </div>
 
         <button type="submit"
