@@ -35,6 +35,11 @@
                     <x-nav-link :href="route('stock-movements.index')" :active="request()->routeIs('stock-movements.*')">
                         Movimientos
                     </x-nav-link>
+                    @if (auth()->user()->isAdmin())
+                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                            Usuarios
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -120,6 +125,11 @@
             <x-responsive-nav-link :href="route('stock-movements.index')" :active="request()->routeIs('stock-movements.*')">
                 Movimientos
             </x-responsive-nav-link>
+            @if (auth()->user()->isAdmin())
+                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                    Usuarios
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <div class="border-t border-slate-200 pb-1 pt-4">

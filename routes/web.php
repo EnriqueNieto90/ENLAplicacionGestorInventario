@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas accesibles sin iniciar sesión
@@ -43,6 +44,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+        // Rutas para gestión de usuarios, solo accesibles para administradores
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
     });
 
     // Detalle de artículo. Se debe declarar después de las rutas específicas para evitar conflictos con /items/create, etc
